@@ -1,0 +1,208 @@
+@import "tailwindcss";
+
+/* * {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: #f7f9f9;
+  color: #0f1419;
+}
+
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 320px;
+  padding: 24px;
+  background: white;
+  border: 1px solid #e1e8ed;
+  border-radius: 12px;
+}
+
+.auth-form input {
+  padding: 10px;
+  border: 1px solid #cfd9de;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.auth-form button {
+  padding: 10px;
+  border: none;
+  border-radius: 999px;
+  background: #1d9bf0;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-form button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.error {
+  color: #e0245e;
+  font-size: 13px;
+  margin: 0;
+}
+
+.status {
+  color: #17bf63;
+  font-size: 13px;
+  margin: 0;
+}
+
+.timeline-page {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.timeline-page header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.user-id {
+  background: #eee;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compose-box,
+.follow-box {
+  background: white;
+  border: 1px solid #e1e8ed;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.compose-box textarea {
+  width: 100%;
+  border: none;
+  resize: none;
+  font-size: 15px;
+  outline: none;
+  font-family: inherit;
+}
+
+.compose-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #536471;
+}
+
+.compose-footer button {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 999px;
+  background: #1d9bf0;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.follow-box {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.follow-box input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #cfd9de;
+  border-radius: 6px;
+  min-width: 160px;
+}
+
+.follow-box button {
+  padding: 8px 12px;
+  border: 1px solid #cfd9de;
+  border-radius: 999px;
+  background: white;
+  cursor: pointer;
+}
+
+.debug-badge {
+  font-size: 11px;
+  color: #536471;
+  margin: 0 0 8px;
+}
+
+.tweet-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tweet-card {
+  background: white;
+  border: 1px solid #e1e8ed;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.tweet-header {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.username {
+  color: #536471;
+}
+
+.timestamp {
+  color: #536471;
+  font-size: 12px;
+  margin-left: auto;
+}
+
+.tweet-card p {
+  margin: 0;
+  font-size: 15px;
+  white-space: pre-wrap;
+}
+
+.load-more {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cfd9de;
+  border-radius: 999px;
+  background: white;
+  cursor: pointer;
+  margin-top: 8px;
+} */
