@@ -69,9 +69,24 @@ export const api = {
       body: { content },
     }),
 
-  getUserTweets: (userId) =>
-    request(`/tweets/user/${userId}`, {
-      auth: false,
+  likeTweet: (tweetId) =>
+    request(`/tweets/${tweetId}/like`, { method: "POST" }),
+
+  retweet: (tweetId) =>
+    request(`/tweets/${tweetId}/retweet`, { method: "POST" }),
+
+  unlikeTweet: (tweetId) =>
+    request(`/tweets/${tweetId}/like`, { method: "DELETE" }),
+
+  unretweet: (tweetId) =>
+    request(`/tweets/${tweetId}/retweet`, { method: "DELETE" }),
+
+  getComments: (tweetId) => request(`/tweets/${tweetId}/comments`),
+
+  addComment: (tweetId, content) =>
+    request(`/tweets/${tweetId}/comments`, {
+      method: "POST",
+      body: { content },
     }),
 
   follow: (userId) =>
@@ -83,4 +98,17 @@ export const api = {
     request(`/follows/${userId}`, {
       method: "DELETE",
     }),
+
+  searchUsers: (query = "") =>
+    request(`/users/search?q=${encodeURIComponent(query)}`),
+
+  getUserProfile: (username) => request(`/users/profile/${username}`),
+
+  getUserTweets: (userId) => request(`/users/${userId}/tweets`),
+
+  getUserRetweets: (userId) => request(`/users/${userId}/retweets`),
+
+  getUserReplies: (userId) => request(`/users/${userId}/replies`),
+
+  getUserLikes: (userId) => request(`/users/${userId}/likes`),
 };

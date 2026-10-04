@@ -9,8 +9,11 @@ import { requireAuth } from "./middleware/authMiddleware.js";
 import { tweetRouter } from "./routes/tweetRoutes.js";
 import { followRouter } from "./routes/followRoutes.js";
 import { timelineRouter } from "./routes/timelineRoutes.js";
+import { userRouter } from "./routes/userRoutes.js";
+import { initDb } from "./db/init.js";
 
 const app = express();
+initDb().catch((err) => console.error("initDb error:", err));
 app.use(
   cors({
     origin: process.env.VITE_FRONTEND_URL || "http://localhost:5173",
@@ -24,6 +27,7 @@ app.use("/auth", authRouter);
 app.use("/tweets", tweetRouter);
 app.use("/follows", followRouter);
 app.use("/timeline", timelineRouter);
+app.use("/users", userRouter);
 
 // Protected sanity-check route: proves the token round-trips correctly
 // and req.userId resolves to a real user.

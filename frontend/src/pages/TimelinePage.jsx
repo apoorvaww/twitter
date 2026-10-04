@@ -38,7 +38,7 @@ export default function TimelinePage() {
 
   return (
     <div className="min-h-screen bg-white text-black dark:bg-black dark:text-white">
-      <div className="mx-auto flex max-w-[1300px]">
+      <div className="mx-auto flex max-w-325">
         {/* =========================================
             LEFT SIDEBAR
         ========================================= */}
@@ -46,8 +46,8 @@ export default function TimelinePage() {
           className="
             hidden
             md:flex
-            w-[88px]
-            lg:w-[260px]
+            w-22
+            lg:w-65
             min-h-screen
             flex-col
             border-r
@@ -166,8 +166,8 @@ export default function TimelinePage() {
         <main
           className="
             w-full
-            md:w-[600px]
-            lg:w-[650px]
+            md:w-150
+            lg:w-162.5
             border-r
             border-gray-200
             dark:border-gray-800
@@ -334,7 +334,7 @@ export default function TimelinePage() {
           className="
             hidden
             lg:block
-            w-[350px]
+            w-87.5
             px-6
             py-4
             sticky
@@ -342,25 +342,7 @@ export default function TimelinePage() {
             h-screen
           "
         >
-          {/* Search */}
-          <div
-            className="
-              flex
-              items-center
-              gap-3
-              rounded-full
-              bg-gray-100
-              dark:bg-gray-900
-              px-4
-              py-3
-              text-gray-500
-              dark:text-gray-400
-            "
-          >
-            <span>⌕</span>
 
-            <span className="text-sm">Search</span>
-          </div>
 
           {/* Follow Box */}
           <div className="mt-5">
