@@ -48,7 +48,7 @@ export default function UserProfilePage() {
     };
 
     fetchData();
-  }, [username]);
+  }, [username]); 
 
   const loadTabData = async (selectedTab, profileId = profile?.id) => {
     setLoading(true);
