@@ -110,5 +110,9 @@ export const api = {
 
   getUserReplies: (userId) => request(`/users/${userId}/replies`),
 
-  getUserLikes: (userId) => request(`/users/${userId}/likes`),
+  getMyProfile: () => request('/profile/me'),
+  updateMyProfile: (data) => request('/profile/me', { method: 'PUT', body: data }),
+  getBookmarks: () => request('/bookmarks'),
+  addBookmark: (tweetId) => request(`/bookmarks/${tweetId}`, { method: 'POST' }),
+  removeBookmark: (tweetId) => request(`/bookmarks/${tweetId}`, { method: 'DELETE' }),
 };

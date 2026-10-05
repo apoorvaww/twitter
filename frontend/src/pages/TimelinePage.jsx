@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import ComposeBox from "../components/ComposeBox.jsx";
 import TweetCard from "../components/TweetCard.jsx";
 import FollowBox from "../components/FollowBox.jsx";
+import { Link } from "react-router-dom";
 
 export default function TimelinePage() {
   const { user, logout } = useAuth();
@@ -39,9 +40,7 @@ export default function TimelinePage() {
   return (
     <div className="min-h-screen bg-white text-black dark:bg-black dark:text-white">
       <div className="mx-auto flex max-w-325">
-        {/* =========================================
-            LEFT SIDEBAR
-        ========================================= */}
+        {/* sidebar */}
         <aside
           className="
             hidden
@@ -68,7 +67,8 @@ export default function TimelinePage() {
 
           {/* Navigation */}
           <nav className="space-y-2">
-            <button
+            <Link
+              to="/"
               className="
                 flex
                 w-full
@@ -89,9 +89,10 @@ export default function TimelinePage() {
               <span>⌂</span>
 
               <span className="hidden lg:inline">Home</span>
-            </button>
+            </Link>
 
-            <button
+            <Link
+              to="/profile"
               className="
                 flex
                 w-full
@@ -111,7 +112,7 @@ export default function TimelinePage() {
               <span>♙</span>
 
               <span className="hidden lg:inline">Profile</span>
-            </button>
+            </Link>
           </nav>
 
           {/* User section */}
@@ -160,9 +161,6 @@ export default function TimelinePage() {
           </div>
         </aside>
 
-        {/* =========================================
-            MAIN TIMELINE
-        ========================================= */}
         <main
           className="
             w-full

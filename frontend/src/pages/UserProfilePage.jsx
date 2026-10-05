@@ -2,36 +2,59 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { api } from "../api/client.js";
 import TweetCard from "../components/TweetCard.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function UserProfilePage() {
-  const { username } = useParams();
+  const { username: routeUsername } = useParams();
+  const { user } = useAuth();
+  const username = routeUsername || user?.username;
   const [profile, setProfile] = useState(null);
   const [tweets, setTweets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [tab, setTab] = useState("tweets"); // tweets, retweets, replies, likes
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!username) {
+        setError("No username found");
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
+      setError(null);
+
       try {
+        console.log("Fetching profile for:", username);
+
         const profileData = await api.getUserProfile(username);
-        setProfile(profileData);
-        // fetch initial tab data
-        await loadTabData("tweets");
+
+        console.log("Profile response:", profileData);
+
+        // API returns { user: {...} }
+        const profile = profileData.user;
+
+        setProfile(profile);
+
+        // Use the actual user's ID
+        await loadTabData("tweets", profile.id);
       } catch (err) {
-        console.error(err);
+        console.error("PROFILE ERROR:", err);
+        setError(err.message || "Failed to load profile");
       } finally {
         setLoading(false);
       }
     };
+
     fetchData();
   }, [username]);
 
-  const loadTabData = async (selectedTab) => {
+  const loadTabData = async (selectedTab, profileId = profile?.id) => {
     setLoading(true);
     try {
       let data;
-      const userId = profile?.id;
+      const userId = profileId;
       switch (selectedTab) {
         case "tweets":
           data = await api.getUserTweets(userId);
@@ -57,8 +80,20 @@ export default function UserProfilePage() {
     }
   };
 
-  if (!profile) {
+  if (loading) {
     return <div className="px-5 py-4">Loading profile...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="px-5 py-4 text-red-500">
+        Failed to load profile: {error}
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return <div className="px-5 py-4">Profile not found.</div>;
   }
 
   return (
@@ -74,22 +109,40 @@ export default function UserProfilePage() {
           {/* Header with banner and follow button */}
           <section className="bg-gray-100 dark:bg-gray-900 p-6">
             <h1 className="text-2xl font-bold">{profile.displayName}</h1>
-            <p className="text-gray-600 dark:text-gray-400">@{profile.username}</p>
+            <p className="text-gray-600 dark:text-gray-400">
+              @{profile.username}
+            </p>
             <div className="mt-4 flex gap-3">
               <button
                 onClick={() => {
                   if (profile.isFollowing) {
-                    api.unfollow(profile.id).then(() => setProfile({ ...profile, isFollowing: false }));
+                    api
+                      .unfollow(profile.id)
+                      .then(() =>
+                        setProfile({ ...profile, isFollowing: false }),
+                      );
                   } else {
-                    api.follow(profile.id).then(() => setProfile({ ...profile, isFollowing: true }));
+                    api
+                      .follow(profile.id)
+                      .then(() =>
+                        setProfile({ ...profile, isFollowing: true }),
+                      );
                   }
-                }
-                }
+                }}
                 className="rounded-full bg-black px-4 py-2 text-sm font-bold text-white hover:opacity-90 dark:bg-white dark:text-black"
               >
                 {profile.isFollowing ? "Unfollow" : "Follow"}
               </button>
             </div>
+            {/* Edit Profile button for own profile */}
+            {user && user.username === profile.username && (
+              <button
+                onClick={() => (window.location.href = "/profile/edit")}
+                className="ml-4 rounded bg-gray-200 px-3 py-1 hover:bg-gray-300"
+              >
+                Edit Profile
+              </button>
+            )}
           </section>
 
           {/* Tab navigation */}

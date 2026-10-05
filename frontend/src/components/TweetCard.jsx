@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { api } from "../api/client.js";
 
+
 export default function TweetCard({ tweet }) {
   const [localTweet, setLocalTweet] = useState(tweet);
 
@@ -55,16 +56,32 @@ export default function TweetCard({ tweet }) {
 
   const handleReply = async () => {
     const content = window.prompt("Reply to tweet:");
-    if (content) {
-      try {
-        await api.addComment(localTweet.id, content);
-        setLocalTweet({
-          ...localTweet,
-          commentCount: (localTweet.commentCount || 0) + 1,
-        });
-      } catch (err) {
-        console.error(err);
+    if (!content) return;
+
+    try {
+      await api.addComment(localTweet.id, content);
+      setLocalTweet({
+        ...localTweet,
+        commentCount: (localTweet.commentCount || 0) + 1,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleBookmark = async () => {
+    try {
+      if (localTweet.bookmarked) {
+        await api.removeBookmark(localTweet.id);
+      } else {
+        await api.addBookmark(localTweet.id);
       }
+      setLocalTweet({
+        ...localTweet,
+        bookmarked: !localTweet.bookmarked,
+      });
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -99,12 +116,12 @@ export default function TweetCard({ tweet }) {
           </div>
 
           {/* Tweet content */}
-          <p className="mt-1 whitespace-pre-wrap break-words text-[15px] leading-5 text-black dark:text-white">
+          <p className="mt-1 whitespace-pre-wrap wrap-break-word text-[15px] leading-5 text-black dark:text-white">
             {localTweet.content}
           </p>
 
           {/* Actions */}
-          <div className="mt-3 flex max-w-[425px] items-center justify-between text-gray-500 dark:text-gray-500">
+          <div className="mt-3 flex max-w-106.25 items-center justify-between text-gray-500 dark:text-gray-500">
             {/* Reply */}
             <button type="button" className="group flex items-center gap-1 text-sm" aria-label="Reply" onClick={handleReply}>
               <span className="flex h-8 w-8 items-center justify-center rounded-full group-hover:bg-blue-500/10 group-hover:text-[#1d9bf0]">💬</span>
@@ -134,9 +151,17 @@ export default function TweetCard({ tweet }) {
               )}
             </button>
 
+            {/* Bookmark */}
+            <button type="button" className="group flex items-center gap-1 text-sm" aria-label="Bookmark" onClick={handleBookmark}>
+              <span className="flex h-8 w-8 items-center justify-center rounded-full group-hover:bg-yellow-500/10 group-hover:text-yellow-500">
+                {localTweet.bookmarked ? "🔖" : "🔖"}
+              </span>
+              <span className="hidden sm:inline">Bookmark</span>
+            </button>
+
             {/* Share */}
             <button type="button" className="group flex items-center gap-1 text-sm" aria-label="Share">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full group-hover:bg-blue-500/10 group-hover:text-[#1d9bf0]">↗</span>
+              <span className="flex h-8 w-8 items-center justify-center rounded-full group-hover:bg-blue-5..." >↗</span>
               <span className="hidden sm:inline">Share</span>
             </button>
           </div>

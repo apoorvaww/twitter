@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import EditProfilePage from "./pages/EditProfilePage.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
@@ -23,7 +24,30 @@ export default function App() {
           </RequireAuth>
         }
       />
-      <Route path="/profile" element={<UserProfilePage/>} />
+      <Route
+        path="/profile"
+        element={
+          <RequireAuth>
+            <UserProfilePage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/profile/:username"
+        element={
+          <RequireAuth>
+            <UserProfilePage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/profile/edit"
+        element={
+          <RequireAuth>
+            <EditProfilePage />
+          </RequireAuth>
+        }
+      />
     </Routes>
   );
 }
