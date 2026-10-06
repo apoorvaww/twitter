@@ -15,7 +15,7 @@ import { bookmarkRouter } from "./routes/bookmarkRoutes.js";
 import { initDb } from "./db/init.js";
 
 const app = express();
-initDb().catch((err) => console.error("initDb error:", err));
+await initDb();
 app.use(
   cors({
     origin: process.env.VITE_FRONTEND_URL || "http://localhost:5173",

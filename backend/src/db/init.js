@@ -3,6 +3,15 @@ import { sql } from "./index.js";
 export async function initDb() {
   try {
     await sql`
+      ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "bio" varchar(160);
+    `;
+    await sql`
+      ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "avatar_url" varchar(255);
+    `;
+    await sql`
+      ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "private" boolean DEFAULT false NOT NULL;
+    `;
+    await sql`
       ALTER TABLE "tweets" ADD COLUMN IF NOT EXISTS "like_count" integer DEFAULT 0 NOT NULL;
     `;
     await sql`
@@ -57,5 +66,6 @@ export async function initDb() {
     console.log("Database initialized successfully.");
   } catch (err) {
     console.error("Database initialization error:", err.message);
+    throw err;
   }
 }
