@@ -1,6 +1,13 @@
-const BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? "http://localhost:4000" : "/api");
+const configuredBaseUrl = import.meta.env.VITE_API_URL?.trim();
+const isLocalhostUrl =
+  /^https?:\/\/(localhost|127(?:\.\d{1,3}){3}|\[::1\])(?::\d+)?(?:\/|$)/i.test(
+    configuredBaseUrl ?? "",
+  );
+const BASE_URL = import.meta.env.DEV
+  ? configuredBaseUrl || "http://localhost:4000"
+  : configuredBaseUrl && !isLocalhostUrl
+    ? configuredBaseUrl
+    : "/api";
 
 function getToken() {
   return localStorage.getItem("token");
