@@ -38,6 +38,7 @@ services:
     restart: "no"
 
   api:
+    image: apoorvaww/twitter-backend:latest
     build:
       context: ./backend
       target: runtime
@@ -60,6 +61,7 @@ services:
     restart: unless-stopped
 
   worker:
+    image: apoorvaww/twitter-worker:latest
     build:
       context: ./backend
       target: runtime
@@ -75,6 +77,7 @@ services:
     restart: unless-stopped
 
   frontend:
+    image: apoorvaww/twitter-frontend:latest
     build:
       context: ./frontend
       args:
