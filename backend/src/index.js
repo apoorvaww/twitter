@@ -12,10 +12,8 @@ import { timelineRouter } from "./routes/timelineRoutes.js";
 import { profileRouter } from "./routes/profileRoutes.js";
 import { userRouter } from "./routes/userRoutes.js";
 import { bookmarkRouter } from "./routes/bookmarkRoutes.js";
-import { initDb } from "./db/init.js";
 
 const app = express();
-await initDb();
 app.use(
   cors({
     origin: process.env.VITE_FRONTEND_URL || "http://localhost:5173",

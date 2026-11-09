@@ -775,6 +775,29 @@ VITE_API_URL=http://localhost:4000
 
 # 🚀 Running the Project
 
+## Containerized setup
+
+Docker Compose runs the frontend, API, fan-out worker, PostgreSQL, and Redis. The database migrations run automatically before the API and worker start.
+
+1. Install Docker Desktop (or another Docker Compose v2 runtime).
+2. From the repository root, copy `.env.example` to `.env` and replace the example values with your own secrets. Use a URL-safe password containing only letters and numbers for `POSTGRES_PASSWORD`.
+
+   ```powershell
+   Copy-Item .env.example .env
+   ```
+
+3. Build and start the complete stack:
+
+   ```bash
+   docker compose up --build
+   ```
+
+4. Open [http://localhost:8080](http://localhost:8080).
+
+PostgreSQL and Redis data are stored in named Docker volumes and survive container recreation. To stop the stack, run `docker compose down`. To delete the persisted database and Redis data too, run `docker compose down -v` (this permanently deletes that local data).
+
+## Running without Docker
+
 ## 1. Clone the repository
 
 ```bash
@@ -1059,6 +1082,7 @@ Current limitations include:
 - No sophisticated celebrity detection
 - Redis and PostgreSQL consistency is eventually consistent
 - No large-scale load testing yet
+- Compose is intended for local or single-host use; production needs TLS, managed secrets, backups, and monitoring
 
 ---
 
@@ -1077,7 +1101,7 @@ Possible improvements include:
 - Load testing with millions of tweets
 - Metrics with Prometheus
 - Grafana dashboards
-- Docker-based deployment
+- Production deployment hardening (TLS, secret management, and backups)
 - Horizontal API scaling
 - Better celebrity/fan-out thresholds
 - Monitoring queue latency and Redis memory usage
