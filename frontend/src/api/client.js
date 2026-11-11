@@ -108,6 +108,10 @@ export const api = {
       method: "DELETE",
     }),
 
+  getFollowers: (userId) => request(`/follows/${userId}/followers`),
+
+  getFollowing: (userId) => request(`/follows/${userId}/following`),
+
   searchUsers: (query = "") =>
     request(`/users/search?q=${encodeURIComponent(query)}`),
 
@@ -119,9 +123,16 @@ export const api = {
 
   getUserReplies: (userId) => request(`/users/${userId}/replies`),
 
-  getMyProfile: () => request('/profile/me'),
-  updateMyProfile: (data) => request('/profile/me', { method: 'PUT', body: data }),
-  getBookmarks: () => request('/bookmarks'),
-  addBookmark: (tweetId) => request(`/bookmarks/${tweetId}`, { method: 'POST' }),
-  removeBookmark: (tweetId) => request(`/bookmarks/${tweetId}`, { method: 'DELETE' }),
+  getUserLikes: (userId) => request(`/users/${userId}/likes`),
+
+  getMyProfile: () => request("/profile/me"),
+  updateMyProfile: (data) => request("/profile/me", { method: "PUT", body: data }),
+  getBookmarks: () => request("/bookmarks"),
+  addBookmark: (tweetId) => request(`/bookmarks/${tweetId}`, { method: "POST" }),
+  removeBookmark: (tweetId) => request(`/bookmarks/${tweetId}`, { method: "DELETE" }),
+
+  // Notifications
+  getNotifications: () => request("/notifications"),
+  markAllNotificationsRead: () => request("/notifications/read-all", { method: "POST" }),
+  markNotificationRead: (id) => request(`/notifications/${id}/read`, { method: "PATCH" }),
 };

@@ -1,6 +1,7 @@
 import { eq, asc, sql } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { comments, tweets, users } from "../db/schema.js";
+import { enqueueNotification } from "../queue/notificationQueue.js";
 
 const MAX_COMMENT_LENGTH = 280;
 
@@ -41,7 +42,7 @@ export async function createComment(req, res) {
 
   // Verify tweet exists
   const [tweet] = await db
-    .select({ id: tweets.id })
+    .select({ id: tweets.id, userId: tweets.userId })
     .from(tweets)
     .where(eq(tweets.id, tweetId))
     .limit(1);
@@ -64,6 +65,18 @@ export async function createComment(req, res) {
     .update(tweets)
     .set({ commentCount: sql`${tweets.commentCount} + 1` })
     .where(eq(tweets.id, tweetId));
+
+  // Enqueue notification for tweet author
+  try {
+    await enqueueNotification({
+      userId: tweet.userId,
+      actorId: req.userId,
+      type: "comment",
+      tweetId,
+    });
+  } catch (err) {
+    console.error("[notification comment enqueue error]", err);
+  }
 
   const [author] = await db
     .select({

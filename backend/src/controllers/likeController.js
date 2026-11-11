@@ -1,13 +1,14 @@
 import { and, eq, sql } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { likes, tweets } from "../db/schema.js";
+import { enqueueNotification } from "../queue/notificationQueue.js";
 
 export async function toggleLike(req, res) {
   const { tweetId } = req.params;
 
   // Verify tweet exists
   const [tweet] = await db
-    .select({ id: tweets.id, likeCount: tweets.likeCount })
+    .select({ id: tweets.id, userId: tweets.userId, likeCount: tweets.likeCount })
     .from(tweets)
     .where(eq(tweets.id, tweetId))
     .limit(1);
@@ -38,8 +39,16 @@ export async function toggleLike(req, res) {
   } else {
     try {
       await db.insert(likes).values({ userId: req.userId, tweetId });
+      
+      // Enqueue notification for author of the tweet
+      await enqueueNotification({
+        userId: tweet.userId,
+        actorId: req.userId,
+        type: "like",
+        tweetId,
+      });
     } catch (err) {
-      // Handled duplicate
+      // Handled duplicate or enqueue error
     }
 
     const [updated] = await db

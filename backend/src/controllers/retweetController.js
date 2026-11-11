@@ -1,13 +1,14 @@
 import { and, eq, sql } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { retweets, tweets } from "../db/schema.js";
+import { enqueueNotification } from "../queue/notificationQueue.js";
 
 export async function toggleRetweet(req, res) {
   const { tweetId } = req.params;
 
   // Verify tweet exists
   const [tweet] = await db
-    .select({ id: tweets.id, retweetCount: tweets.retweetCount })
+    .select({ id: tweets.id, userId: tweets.userId, retweetCount: tweets.retweetCount })
     .from(tweets)
     .where(eq(tweets.id, tweetId))
     .limit(1);
@@ -38,6 +39,14 @@ export async function toggleRetweet(req, res) {
   } else {
     try {
       await db.insert(retweets).values({ userId: req.userId, tweetId });
+
+      // Enqueue notification for tweet author
+      await enqueueNotification({
+        userId: tweet.userId,
+        actorId: req.userId,
+        type: "retweet",
+        tweetId,
+      });
     } catch (err) {
       // Duplicate handled
     }

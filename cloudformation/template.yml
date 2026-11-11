@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudFormation Comparative Template for Twitter Social Media DevOps Architecture'
+
+Parameters:
+  InstanceType:
+    Type: String
+    Default: t3.small
+    Description: Cost-effective EC2 instance size for student evaluation.
+
+Resources:
+  TwitterVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: twitter-cfn-vpc
+
+  TwitterInternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  TwitterAttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref TwitterVPC
+      InternetGatewayId: !Ref TwitterInternetGateway
+
+  TwitterPublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref TwitterVPC
+      CidrBlock: 10.0.1.0/24
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: twitter-cfn-public-subnet
+
+  TwitterSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for Twitter App and Grafana/Prometheus
+      VpcId: !Ref TwitterVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 4000
+          ToPort: 4000
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 9090
+          ToPort: 9090
+          CidrIp: 0.0.0.0/0
+
+Outputs:
+  VPCId:
+    Description: Created VPC
+    Value: !Ref TwitterVPC

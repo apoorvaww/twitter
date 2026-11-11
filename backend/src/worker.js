@@ -3,16 +3,18 @@ import { Worker } from "bullmq";
 import IORedis from "ioredis";
 import { eq } from "drizzle-orm";
 import { db } from "./db/index.js";
-import { follows, users } from "./db/schema.js";
+import { follows, users, notifications } from "./db/schema.js";
 import { addToTimeline } from "./redis/index.js";
 import { FANOUT_QUEUE_NAME } from "./queue/fanoutQueue.js";
+import { NOTIFICATION_QUEUE_NAME } from "./queue/notificationQueue.js";
 import { CELEBRITY_FOLLOWER_THRESHOLD } from "./config/constants.js";
 
 const connection = new IORedis(process.env.REDIS_URL, {
   maxRetriesPerRequest: null,
 });
 
-const worker = new Worker(
+// Fanout Worker
+const fanoutWorker = new Worker(
   FANOUT_QUEUE_NAME,
   async (job) => {
     const { tweetId, authorId, createdAtMs } = job.data;
@@ -50,10 +52,40 @@ const worker = new Worker(
   { connection }
 );
 
-worker.on("failed", (job, err) => {
+fanoutWorker.on("failed", (job, err) => {
   console.error(`[fanout] job ${job?.id} failed:`, err.message);
 });
 
-worker.on("ready", () => {
+fanoutWorker.on("ready", () => {
   console.log("Fan-out worker started, waiting for jobs...");
+});
+
+// Notification Worker
+const notificationWorker = new Worker(
+  NOTIFICATION_QUEUE_NAME,
+  async (job) => {
+    const { userId, actorId, type, tweetId } = job.data;
+    try {
+      await db.insert(notifications).values({
+        userId,
+        actorId,
+        type,
+        tweetId: tweetId || null,
+        read: false,
+      });
+      console.log(`[notification] created type=${type} for user=${userId} by actor=${actorId}`);
+    } catch (err) {
+      console.error("[notification] db insert failed:", err);
+      throw err;
+    }
+  },
+  { connection }
+);
+
+notificationWorker.on("failed", (job, err) => {
+  console.error(`[notification] job ${job?.id} failed:`, err.message);
+});
+
+notificationWorker.on("ready", () => {
+  console.log("Notification worker started, waiting for jobs...");
 });

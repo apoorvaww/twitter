@@ -1,0 +1,29 @@
+groups:
+  - name: twitter_alerts
+    rules:
+      - alert: HighHttpErrorRate
+        expr: rate(twitter_http_requests_total{status_code=~"5.."}[5m]) / rate(twitter_http_requests_total[5m]) > 0.05
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High HTTP 5xx error rate detected on API"
+          description: "Over 5% of API requests resulted in 5xx status codes over the last 5 minutes."
+
+      - alert: BullMQQueueBacklog
+        expr: twitter_queue_waiting_jobs > 500
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "BullMQ background job backlog growing"
+          description: "Queue {{ $labels.queue_name }} has more than 500 waiting jobs."
+
+      - alert: ApiHighLatency
+        expr: histogram_quantile(0.95, sum(rate(twitter_http_request_duration_seconds_bucket[5m])) by (le)) > 1.0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API 95th percentile latency exceeds 1s"
+          description: "P95 response latency is higher than 1 second."

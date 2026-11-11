@@ -5,6 +5,8 @@ import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
 import TimelinePage from "./pages/TimelinePage.jsx";
 import UserProfilePage from "./pages/UserProfilePage.jsx";
+import NotificationsPage from "./pages/NotificationsPage.jsx";
+import FollowListPage from "./pages/FollowListPage.jsx";
 
 function RequireAuth({ children }) {
   const { user } = useAuth();
@@ -25,6 +27,14 @@ export default function App() {
         }
       />
       <Route
+        path="/notifications"
+        element={
+          <RequireAuth>
+            <NotificationsPage />
+          </RequireAuth>
+        }
+      />
+      <Route
         path="/profile"
         element={
           <RequireAuth>
@@ -37,6 +47,22 @@ export default function App() {
         element={
           <RequireAuth>
             <UserProfilePage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/profile/:username/followers"
+        element={
+          <RequireAuth>
+            <FollowListPage type="followers" />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/profile/:username/following"
+        element={
+          <RequireAuth>
+            <FollowListPage type="following" />
           </RequireAuth>
         }
       />
