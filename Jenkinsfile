@@ -4,8 +4,8 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
-        DOCKER_FRONTEND_IMAGE = "twitter:frontend"
-        DOCKER_BACKEND_IMAGE  = "twitter:api"
+        DOCKER_FRONTEND_IMAGE = "apoorvaww/twitter-frontend:latest"
+        DOCKER_BACKEND_IMAGE  = "apoorvaww/twitter-backend:latest"
     }
 
     stages {
@@ -61,9 +61,9 @@ pipeline {
                 echo 'Checking SonarQube configuration...'
 
                 // Configure SonarQube before enabling the actual scan.
-                // withSonarQubeEnv('SonarQubeServer') {
-                //     bat 'sonar-scanner'
-                // }
+                withSonarQubeEnv('SonarQubeServer') {
+                    bat 'sonar-scanner'
+                }
 
                 echo 'SonarQube scan is currently not enabled.'
             }
@@ -102,18 +102,19 @@ pipeline {
 
 
         // Stage 8: Publish images to Docker Hub
+
         stage('8. Publish to Docker Hub') {
             steps {
-                echo 'Checking Docker Hub publishing configuration...'
+                echo 'Publishing Docker images to Docker Hub...'
 
-                // Enable these commands after configuring Docker Hub
-                // bat 'echo %DOCKERHUB_CREDENTIALS_PSW% | docker login -u %DOCKERHUB_CREDENTIALS_USR% --password-stdin'
-                // bat 'docker push %DOCKER_BACKEND_IMAGE%'
-                // bat 'docker push %DOCKER_FRONTEND_IMAGE%'
+                bat 'echo %DOCKERHUB_CREDENTIALS_PSW% | docker login -u %DOCKERHUB_CREDENTIALS_USR% --password-stdin'
 
-                echo 'Docker Hub publishing is currently not enabled.'
+                bat 'docker push %DOCKER_BACKEND_IMAGE%'
+
+                bat 'docker push %DOCKER_FRONTEND_IMAGE%'
             }
         }
+
 
         // Stage 9: AWS deployment
         stage('9. Deploy to AWS') {
@@ -121,7 +122,7 @@ pipeline {
                 echo 'Checking AWS deployment configuration...'
 
                 // Enable after configuring the AWS deployment environment.
-                // bat 'docker compose up -d'
+                bat 'docker compose up -d'
 
                 echo 'AWS deployment is currently not enabled.'
             }
