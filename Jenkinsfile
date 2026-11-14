@@ -58,14 +58,19 @@ pipeline {
         // Stage 5: Static analysis and SonarQube
         stage('5. Static Analysis & SonarQube') {
             steps {
-                echo 'Checking SonarQube configuration...'
+                script {
+                    def scannerHome = tool 'SonarScanner'
 
-                // Configure SonarQube before enabling the actual scan.
-                withSonarQubeEnv('SonarQubeServer') {
-                    bat 'sonar-scanner'
+                    withSonarQubeEnv('SonarQube') {
+                        bat """
+                            "${scannerHome}\\bin\\sonar-scanner.bat" ^
+                            -Dsonar.projectKey=twitter-ci-cd ^
+                            -Dsonar.projectName=Twitter-CI-CD ^
+                            -Dsonar.sources=backend,frontend ^
+                            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/coverage/**
+                        """
+                    }
                 }
-
-                echo 'SonarQube scan is currently not enabled.'
             }
         }
 
