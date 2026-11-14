@@ -81,15 +81,25 @@ pipeline {
         }
 
         // Stage 7: Container vulnerability scanning
+        
         stage('7. Container Vulnerability Scanning') {
             steps {
-                echo 'Scanning container images with Trivy...'
+                echo 'Scanning Docker images with Trivy...'
 
-                bat 'trivy image --exit-code 0 --severity HIGH,CRITICAL %DOCKER_BACKEND_IMAGE%'
+                // Export backend image
+                bat 'docker save -o backend-image.tar %DOCKER_BACKEND_IMAGE%'
 
-                bat 'trivy image --exit-code 0 --severity HIGH,CRITICAL %DOCKER_FRONTEND_IMAGE%'
+                // Scan backend image using the official Trivy container
+                bat 'docker run --rm -v "%CD%:/work" aquasec/trivy:0.76.2 image --input /work/backend-image.tar --severity HIGH,CRITICAL --exit-code 0'
+
+                // Export frontend image
+                bat 'docker save -o frontend-image.tar %DOCKER_FRONTEND_IMAGE%'
+
+                // Scan frontend image using the official Trivy container
+                bat 'docker run --rm -v "%CD%:/work" aquasec/trivy:0.76.2 image --input /work/frontend-image.tar --severity HIGH,CRITICAL --exit-code 0'
             }
         }
+
 
         // Stage 8: Publish images to Docker Hub
         stage('8. Publish to Docker Hub') {
