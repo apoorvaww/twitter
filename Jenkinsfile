@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -8,6 +9,7 @@ pipeline {
     }
 
     stages {
+
         // Stage 1: Source-code checkout
         stage('1. Checkout') {
             steps {
@@ -16,15 +18,17 @@ pipeline {
             }
         }
 
-        // Stage 2: Dependency installation & project validation
+        // Stage 2: Dependency installation
         stage('2. Install Dependencies') {
             steps {
                 echo 'Installing dependencies for backend & frontend...'
+
                 dir('backend') {
-                    sh 'npm ci'
+                    bat 'npm ci'
                 }
+
                 dir('frontend') {
-                    sh 'npm ci'
+                    bat 'npm ci'
                 }
             }
         }
@@ -33,31 +37,35 @@ pipeline {
         stage('3. Automated Testing') {
             steps {
                 echo 'Running automated tests with Vitest...'
+
                 dir('backend') {
-                    sh 'npm test'
+                    bat 'npm test'
                 }
             }
         }
 
-        // Stage 4: Database schema and migration validation
+        // Stage 4: Database schema validation
         stage('4. Database Schema Validation') {
             steps {
                 echo 'Validating database schema migrations with Drizzle Kit...'
+
                 dir('backend') {
-                    sh 'npx drizzle-kit check'
+                    bat 'npx drizzle-kit check'
                 }
             }
         }
 
-        // Stage 5: Static analysis and security checks (SonarQube)
+        // Stage 5: Static analysis and SonarQube
         stage('5. Static Analysis & SonarQube') {
             steps {
-                echo 'Performing static code analysis with SonarQube...'
-                // With SonarQube Scanner configured in Jenkins:
+                echo 'Checking SonarQube configuration...'
+
+                // Configure SonarQube before enabling the actual scan.
                 // withSonarQubeEnv('SonarQubeServer') {
-                //     sh 'sonar-scanner'
+                //     bat 'sonar-scanner'
                 // }
-                sh 'echo "SonarQube scan completed successfully."'
+
+                echo 'SonarQube scan is currently not enabled.'
             }
         }
 
@@ -65,37 +73,47 @@ pipeline {
         stage('6. Docker Image Creation') {
             steps {
                 echo 'Building Docker container images...'
-                sh 'docker build -t ${DOCKER_BACKEND_IMAGE} ./backend'
-                sh 'docker build -t ${DOCKER_FRONTEND_IMAGE} ./frontend'
+
+                bat 'docker build -t %DOCKER_BACKEND_IMAGE% ./backend'
+
+                bat 'docker build -t %DOCKER_FRONTEND_IMAGE% ./frontend'
             }
         }
 
-        // Stage 7: Container vulnerability scanning (Trivy)
+        // Stage 7: Container vulnerability scanning
         stage('7. Container Vulnerability Scanning') {
             steps {
                 echo 'Scanning container images with Trivy...'
-                sh 'trivy image --exit-code 0 --severity HIGH,CRITICAL ${DOCKER_BACKEND_IMAGE} || true'
-                sh 'trivy image --exit-code 0 --severity HIGH,CRITICAL ${DOCKER_FRONTEND_IMAGE} || true'
+
+                bat 'trivy image --exit-code 0 --severity HIGH,CRITICAL %DOCKER_BACKEND_IMAGE%'
+
+                bat 'trivy image --exit-code 0 --severity HIGH,CRITICAL %DOCKER_FRONTEND_IMAGE%'
             }
         }
 
-        // Stage 8: Publishing validated images to Docker Hub
+        // Stage 8: Publish images to Docker Hub
         stage('8. Publish to Docker Hub') {
             steps {
-                echo 'Publishing container images...'
-                // sh 'echo "$DOCKERHUB_CREDENTIALS_PSW" | docker login -u "$DOCKERHUB_CREDENTIALS_USR" --password-stdin'
-                // sh 'docker push ${DOCKER_BACKEND_IMAGE}'
-                // sh 'docker push ${DOCKER_FRONTEND_IMAGE}'
-                echo 'Images ready for distribution.'
+                echo 'Checking Docker Hub publishing configuration...'
+
+                // Enable these commands after configuring Docker Hub
+                // bat 'echo %DOCKERHUB_CREDENTIALS_PSW% | docker login -u %DOCKERHUB_CREDENTIALS_USR% --password-stdin'
+                // bat 'docker push %DOCKER_BACKEND_IMAGE%'
+                // bat 'docker push %DOCKER_FRONTEND_IMAGE%'
+
+                echo 'Docker Hub publishing is currently not enabled.'
             }
         }
 
-        // Stage 9: Deployment of updated application to AWS
+        // Stage 9: AWS deployment
         stage('9. Deploy to AWS') {
             steps {
-                echo 'Deploying application to AWS infrastructure via Docker Compose...'
-                // sh 'docker compose up -d'
-                echo 'Application deployed successfully.'
+                echo 'Checking AWS deployment configuration...'
+
+                // Enable after configuring the AWS deployment environment.
+                // bat 'docker compose up -d'
+
+                echo 'AWS deployment is currently not enabled.'
             }
         }
     }
@@ -105,9 +123,11 @@ pipeline {
             echo 'Pipeline execution complete.'
             cleanWs()
         }
+
         success {
-            echo 'Deployment Pipeline succeeded!'
+            echo 'CI/CD Pipeline completed successfully!'
         }
+
         failure {
             echo 'Pipeline failed. Check stage logs for details.'
         }
