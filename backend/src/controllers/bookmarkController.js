@@ -53,6 +53,6 @@ export async function getBookmarks(req, res) {
     .innerJoin(tweets, eq(bookmarks.tweetId, tweets.id))
     .innerJoin(users, eq(tweets.userId, users.id))
     .where(eq(bookmarks.userId, req.userId))
-    .orderBy(tweets.createdAt);
+    .orderBy(tweets.createdAt);``
   return res.json({ tweets: userBookmarks });
 }
