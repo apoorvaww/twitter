@@ -1,8 +1,15 @@
+
 groups:
   - name: twitter_alerts
     rules:
+      # Alert when more than 5% of HTTP requests return 5xx errors
       - alert: HighHttpErrorRate
-        expr: rate(twitter_http_requests_total{status_code=~"5.."}[5m]) / rate(twitter_http_requests_total[5m]) > 0.05
+        expr: |
+          (
+            sum(rate(twitter_http_requests_total{status_code=~"5.."}[5m]))
+            /
+            sum(rate(twitter_http_requests_total[5m]))
+          ) > 0.05
         for: 1m
         labels:
           severity: critical
@@ -10,6 +17,7 @@ groups:
           summary: "High HTTP 5xx error rate detected on API"
           description: "Over 5% of API requests resulted in 5xx status codes over the last 5 minutes."
 
+      # Alert when BullMQ queue backlog exceeds 500
       - alert: BullMQQueueBacklog
         expr: twitter_queue_waiting_jobs > 500
         for: 2m
@@ -19,8 +27,15 @@ groups:
           summary: "BullMQ background job backlog growing"
           description: "Queue {{ $labels.queue_name }} has more than 500 waiting jobs."
 
+      # Alert when API P95 latency exceeds 1 second
       - alert: ApiHighLatency
-        expr: histogram_quantile(0.95, sum(rate(twitter_http_request_duration_seconds_bucket[5m])) by (le)) > 1.0
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum by (le) (
+              rate(twitter_http_request_duration_seconds_bucket[5m])
+            )
+          ) > 1.0
         for: 2m
         labels:
           severity: warning
