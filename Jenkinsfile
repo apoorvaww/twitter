@@ -116,8 +116,8 @@ pipeline {
             }
         }
 
-        
 
+                
         stage('SSH Connection Test') {
             steps {
                 withCredentials([
@@ -128,15 +128,23 @@ pipeline {
                     )
                 ]) {
                     bat '''
+                        echo Checking Jenkins execution account...
+                        whoami
+
+                        echo Checking initial SSH key permissions...
+                        icacls "%SSH_KEY%"
+
                         echo Configuring SSH private key permissions...
 
                         icacls "%SSH_KEY%" /inheritance:r
 
                         icacls "%SSH_KEY%" /remove "BUILTIN\\Users"
 
-                        icacls "%SSH_KEY%" /grant:r "%USERNAME%:R"
+                        for /f "delims=" %%A in ('whoami') do (
+                            icacls "%SSH_KEY%" /grant:r "%%A:R"
+                        )
 
-                        echo Checking permissions...
+                        echo Verifying SSH key permissions...
                         icacls "%SSH_KEY%"
 
                         echo Testing SSH connection...
@@ -146,6 +154,7 @@ pipeline {
                 }
             }
         }
+
 
 
 
