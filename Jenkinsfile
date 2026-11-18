@@ -169,11 +169,34 @@ pipeline {
 
 
         // Stage 9: AWS deployment
+        
         stage('9. Deploy to AWS') {
             steps {
-                echo 'AWS deployment will be configured after EC2 SSH setup.'
+                echo 'Deploying application to AWS EC2...'
+
+                withCredentials([
+                    sshUserPrivateKey(
+                        credentialsId: 'ec2-ssh-key',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'EC2_USER'
+                    )
+                ]) {
+                    bat '''
+                        icacls "%SSH_KEY%" /inheritance:r
+                        icacls "%SSH_KEY%" /grant:r "NT AUTHORITY\\SYSTEM:R"
+
+                        ssh -o StrictHostKeyChecking=accept-new -i "%SSH_KEY%" %EC2_USER%@44.200.19.46 "mkdir -p /opt/twitter"
+
+                        scp -i "%SSH_KEY%" compose.yaml %EC2_USER%@44.200.19.46:/opt/twitter/compose.yaml
+
+                        scp -r -i "%SSH_KEY%" monitoring %EC2_USER%@44.200.19.46:/opt/twitter/
+
+                        ssh -i "%SSH_KEY%" %EC2_USER%@44.200.19.46 "cd /opt/twitter && docker compose pull && docker compose up -d --force-recreate --remove-orphans"
+                    '''
+                }
             }
         }
+
     }
 
     post {
