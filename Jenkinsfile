@@ -116,6 +116,8 @@ pipeline {
             }
         }
 
+        
+
         stage('SSH Connection Test') {
             steps {
                 withCredentials([
@@ -126,11 +128,26 @@ pipeline {
                     )
                 ]) {
                     bat '''
+                        echo Configuring SSH private key permissions...
+
+                        icacls "%SSH_KEY%" /inheritance:r
+
+                        icacls "%SSH_KEY%" /remove "BUILTIN\\Users"
+
+                        icacls "%SSH_KEY%" /grant:r "%USERNAME%:R"
+
+                        echo Checking permissions...
+                        icacls "%SSH_KEY%"
+
+                        echo Testing SSH connection...
+
                         ssh -i "%SSH_KEY%" -o StrictHostKeyChecking=no -o ConnectTimeout=10 %SSH_USER%@44.200.19.46 "echo SSH_CONNECTION_SUCCESSFUL"
                     '''
                 }
             }
         }
+
+
 
         // Stage 9: AWS deployment
         stage('9. Deploy to AWS') {
