@@ -7,3 +7,7 @@
 *.tfvars.json
 *.tfplan
 crash.log
+
+.env
+.env.*
+!.env.example

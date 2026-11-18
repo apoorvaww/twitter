@@ -75,14 +75,19 @@ pipeline {
         }
 
         // Stage 6: Docker image creation
+        
         stage('6. Docker Image Creation') {
             steps {
                 echo 'Building Docker container images...'
 
-                bat 'docker build -t %DOCKER_BACKEND_IMAGE% ./backend'
+                bat 'docker build --target runtime -t %DOCKER_BACKEND_IMAGE% ./backend'
+
+                bat 'docker build --target migrate -t apoorvaww/twitter-migrate:latest ./backend'
+
                 bat 'docker build -t %DOCKER_FRONTEND_IMAGE% ./frontend'
             }
         }
+
 
         // Stage 7: Container vulnerability scanning
         stage('7. Container Vulnerability Scanning') {
@@ -100,6 +105,7 @@ pipeline {
         }
 
         // Stage 8: Publish images to Docker Hub
+
         stage('8. Publish to Docker Hub') {
             steps {
                 echo 'Authenticating with Docker Hub...'
@@ -111,10 +117,14 @@ pipeline {
                 echo 'Pushing backend image...'
                 bat 'docker push %DOCKER_BACKEND_IMAGE%'
 
+                echo 'Pushing migration image...'
+                bat 'docker push apoorvaww/twitter-migrate:latest'
+
                 echo 'Pushing frontend image...'
                 bat 'docker push %DOCKER_FRONTEND_IMAGE%'
             }
         }
+
 
 
                 
