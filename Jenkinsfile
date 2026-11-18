@@ -116,6 +116,22 @@ pipeline {
             }
         }
 
+        stage('SSH Connection Test') {
+            steps {
+                withCredentials([
+                    sshUserPrivateKey(
+                        credentialsId: 'ec2-ssh-key',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
+                    )
+                ]) {
+                    bat '''
+                        ssh -i "%SSH_KEY%" -o StrictHostKeyChecking=no -o ConnectTimeout=10 %SSH_USER%@44.200.19.46 "echo SSH_CONNECTION_SUCCESSFUL"
+                    '''
+                }
+            }
+        }
+
         // Stage 9: AWS deployment
         stage('9. Deploy to AWS') {
             steps {
